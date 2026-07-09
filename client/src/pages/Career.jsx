@@ -65,7 +65,7 @@ What to focus on.
 ## 🔥 Tips to Stand Out
 Real advice (not generic).
 `;
-
+    
     const response = await generateCareer(prompt, role);
 
     setResult(response);
