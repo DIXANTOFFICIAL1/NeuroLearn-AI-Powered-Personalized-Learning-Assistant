@@ -9,6 +9,7 @@ function Career() {
 
   const bottomRef = useRef(null);
 
+  
   const suggestions = [
     "Software Engineer",
     "Frontend Developer",
