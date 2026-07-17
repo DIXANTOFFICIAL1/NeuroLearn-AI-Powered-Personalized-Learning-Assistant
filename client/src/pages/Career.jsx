@@ -8,7 +8,6 @@ function Career() {
   const [loading, setLoading] = useState(false);
 
   const bottomRef = useRef(null);
-
   
   const suggestions = [
     "Software Engineer",
