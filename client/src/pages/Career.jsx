@@ -20,6 +20,7 @@ function Career() {
     "Android Developer",
   ];
 
+  
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [result]);
