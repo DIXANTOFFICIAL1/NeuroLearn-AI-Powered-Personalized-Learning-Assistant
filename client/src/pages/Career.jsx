@@ -19,7 +19,6 @@ function Career() {
     "Cyber Security",
     "Android Developer",
   ];
-
   
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
