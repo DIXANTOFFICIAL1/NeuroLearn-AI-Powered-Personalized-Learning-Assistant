@@ -10,6 +10,7 @@ function Explain() {
   const resultRef = useRef(null);
   const inputRef = useRef(null);
 
+  
   useEffect(() => {
     resultRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [result, loading]);
