@@ -13,7 +13,6 @@ function Dashboard() {
     career: 0,
     activity: [],
   });
-  
 
   const [loading, setLoading] = useState(false);
 
