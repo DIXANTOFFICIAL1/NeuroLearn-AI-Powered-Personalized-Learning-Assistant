@@ -120,13 +120,9 @@ NeuroLearn-AI/
 ├── assets/
 │   ├── architecture.png
 │   ├── dashboard.png
-│   ├── tutor.png
-│   ├── explain.png
 │   ├── quiz.png
 │   ├── roadmap.png
-│   ├── career.png
-│   ├── component-diagram.png
-│   └── dataflow.png
+│   └── career.png
 │
 ├── .gitignore
 ├── LICENSE
