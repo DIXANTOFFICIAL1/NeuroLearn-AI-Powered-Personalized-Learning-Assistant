@@ -83,7 +83,7 @@ AI Generated Responses
 
 ---
 
-# 📂 Project Structure
+## 📂 Project Structure
 
 ```text
 NeuroLearn-AI/
@@ -91,32 +91,47 @@ NeuroLearn-AI/
 ├── client/
 │   ├── public/
 │   ├── src/
-│   ├── components/
-│   ├── pages/
-│   └── package.json
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   │
+│   ├── .gitignore
+│   ├── README.md
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
+│   └── vite.config.js
 │
 ├── server/
-│   ├── routes/
-│   ├── controllers/
 │   ├── services/
-│   ├── middleware/
-│   ├── utils/
+│   │   └── aiService.js
 │   ├── server.js
-│   └── package.json
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── .gitignore
+│   └── README.md
 │
 ├── assets/
 │   ├── architecture.png
 │   ├── dashboard.png
+│   ├── tutor.png
+│   ├── explain.png
 │   ├── quiz.png
 │   ├── roadmap.png
-│   └── career.png
+│   ├── career.png
+│   ├── component-diagram.png
+│   └── dataflow.png
 │
-├── README.md
 ├── .gitignore
-└── LICENSE
+├── LICENSE
+└── README.md
 ```
-
----
 
 # ⚙️ Installation
 
