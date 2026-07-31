@@ -209,7 +209,7 @@ Enter your query and receive AI-generated responses.
 
 ## Quiz Generator
 
-![Quiz](assets/quiz.png)
+![Quiz](./assets/quiz.png)
 
 ---
 
