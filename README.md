@@ -197,7 +197,7 @@ Enter your query and receive AI-generated responses.
 
 ## Dashboard
 
-![Dashboard](assets/dashboard.png)
+![Dashboard](./assets/dashboard.png)
 
 ---
 
