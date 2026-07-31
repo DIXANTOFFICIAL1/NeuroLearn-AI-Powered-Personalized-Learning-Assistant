@@ -203,7 +203,7 @@ Enter your query and receive AI-generated responses.
 
 ## AI Tutor
 
-![Tutor](assets/tutor.png)
+![Tutor](./assets/tutor.png)
 
 ---
 
