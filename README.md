@@ -221,7 +221,7 @@ Enter your query and receive AI-generated responses.
 
 ## Career Guidance
 
-![Career](assets/career.png)
+![Career](./assets/career.png)
 
 ---
 
