@@ -63,7 +63,6 @@ User Question:
     setLoading(false);
   };
 
-  
   const copyText = (text) => {
     navigator.clipboard.writeText(text);
   };
