@@ -215,7 +215,7 @@ Enter your query and receive AI-generated responses.
 
 ## Learning Roadmap
 
-![Roadmap](assets/roadmap.png)
+![Roadmap](./assets/roadmap.png)
 
 ---
 
