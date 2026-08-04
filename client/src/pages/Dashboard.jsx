@@ -14,7 +14,7 @@ function Dashboard() {
     activity: [],
   });
 
-  const [loading, setLoading] = useState(false);
+ const [loading, setLoading] = useState(false);
   
   const [refreshKey, setRefreshKey] = useState(0);
 
