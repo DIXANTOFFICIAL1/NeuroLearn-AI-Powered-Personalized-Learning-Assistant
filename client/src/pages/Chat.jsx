@@ -49,8 +49,7 @@ If the question is "how to":
 User Question:
 "${userInput}"
 `;
-
-      
+   
       const reply = await sendMessageToAI(prompt, userInput);
 
       setMessages((prev) => [...prev, { text: reply, sender: "ai" }]);
