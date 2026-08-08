@@ -8,7 +8,7 @@ function Chat() {
   const [loading, setLoading] = useState(false);
 
   const chatEndRef = useRef(null);
-
+  
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
