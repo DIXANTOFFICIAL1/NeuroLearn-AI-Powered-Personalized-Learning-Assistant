@@ -23,7 +23,6 @@ function Chat() {
     setInput("");
     setLoading(true);
 
-    
     try {
       const prompt = `
 You are a professional AI tutor.
