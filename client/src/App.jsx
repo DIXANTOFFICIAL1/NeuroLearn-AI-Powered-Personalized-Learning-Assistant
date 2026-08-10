@@ -107,6 +107,7 @@ const styles = {
     background: "#020617",
   },
 
+  
   title: {
     color: "#e2e8f0",
     fontSize: "20px",
