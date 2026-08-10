@@ -74,7 +74,6 @@ function App() {
 
 export default App;
 
-
 /* STYLES */
 const styles = {
   app: {
