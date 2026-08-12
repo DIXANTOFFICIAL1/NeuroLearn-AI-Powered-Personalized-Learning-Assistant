@@ -21,7 +21,6 @@ function Explain() {
   const handleExplain = async () => {
     if (!topic.trim()) return;
 
-    
     setLoading(true);
     setResult("");
 
