@@ -79,6 +79,7 @@ body {
   color: var(--text-heading);
 }
 
+
 .chat-container {
   flex: 1;
   padding: 20px;
