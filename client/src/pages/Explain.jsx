@@ -1,17 +1,28 @@
 import { useState, useRef, useEffect } from "react";
-import { explainTopic } from "../services/api"; 
+import { explainTopic } from "../services/api";
 import ReactMarkdown from "react-markdown";
+import PageHeader from "../components/PageHeader";
+import PrimaryButton from "../components/PrimaryButton";
+import LoadingState from "../components/LoadingState";
+import CopyButton from "../components/CopyButton";
+import ErrorMessage from "../components/ErrorMessage";
+import RegenerateButton from "../components/RegenerateButton";
+import ClearResultButton from "../components/ClearResultButton";
+import InputClearButton from "../components/InputClearButton";
 
 function Explain() {
   const [topic, setTopic] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const resultRef = useRef(null);
   const inputRef = useRef(null);
-  
+
   useEffect(() => {
-    resultRef.current?.scrollIntoView({ behavior: "smooth" });
+    resultRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
   }, [result, loading]);
 
   useEffect(() => {
@@ -20,8 +31,9 @@ function Explain() {
 
   const handleExplain = async () => {
     if (!topic.trim()) return;
-    
+
     setLoading(true);
+    setError("");
     setResult("");
 
     const prompt = `
@@ -63,12 +75,11 @@ Rules:
 `;
 
     try {
-
-   const response = await explainTopic(prompt, topic);
+      const response = await explainTopic(topic, prompt);
 
       setResult(response);
     } catch (err) {
-      setResult("⚠️ Error generating explanation");
+      setError("⚠️ Failed to generate explanation");
     }
 
     setLoading(false);
@@ -80,41 +91,58 @@ Rules:
     }
   };
 
-  const copyText = () => {
-    navigator.clipboard.writeText(result);
-  };
-
   return (
     <div style={container}>
-
-      <h2 style={title}>Explain Concept</h2>
+      <PageHeader
+        title="Explain Concept"
+        subtitle="Understand difficult topics in a simple and structured way"
+      />
 
       <div style={inputWrapper}>
-        <input
-          ref={inputRef}
-          value={topic}
-          onChange={(e) => setTopic(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Enter topic (e.g. Binary Search)"
-          style={input}
-        />
+        <div style={inputBox}>
+          <input
+            ref={inputRef}
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Enter topic (e.g. Binary Search)"
+            style={input}
+          />
 
-        <button onClick={handleExplain} style={button}>
+          <InputClearButton
+            visible={!!topic}
+            onClick={() => setTopic("")}
+          />
+        </div>
+
+        <PrimaryButton onClick={handleExplain}>
           Explain
-        </button>
+        </PrimaryButton>
       </div>
 
       {loading && (
-        <div style={loadingStyle}>
-          AI is explaining...
-        </div>
+        <LoadingState message="AI is explaining..." />
       )}
+
+      <ErrorMessage
+        message={error}
+        onRetry={handleExplain}
+      />
 
       {result && (
         <div style={resultWrapper}>
-          <button onClick={copyText} style={copyBtn}>
-            Copy
-          </button>
+          <div style={actionWrapper}>
+            <CopyButton text={result} />
+
+            <RegenerateButton
+              onClick={handleExplain}
+              loading={loading}
+            />
+
+            <ClearResultButton
+              onClick={() => setResult("")}
+            />
+          </div>
 
           <div style={resultBox}>
             <ReactMarkdown>{result}</ReactMarkdown>
@@ -123,15 +151,13 @@ Rules:
       )}
 
       <div ref={resultRef} />
-
     </div>
   );
 }
 
 export default Explain;
 
-
-/* 🔥 STYLES */
+/* ================= STYLES ================= */
 
 const container = {
   height: "100%",
@@ -142,10 +168,6 @@ const container = {
   overflow: "hidden",
 };
 
-const title = {
-  marginBottom: "20px",
-};
-
 const inputWrapper = {
   display: "flex",
   gap: "10px",
@@ -153,28 +175,22 @@ const inputWrapper = {
   maxWidth: "700px",
 };
 
-const input = {
+const inputBox = {
+  position: "relative",
   flex: 1,
+  minWidth: 0,
+};
+
+const input = {
+  width: "100%",
+  boxSizing: "border-box",
   padding: "12px",
+  paddingRight: "35px",
   borderRadius: "8px",
   border: "none",
   outline: "none",
   background: "#1e293b",
   color: "white",
-};
-
-const button = {
-  padding: "12px 20px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#2563eb",
-  color: "white",
-  cursor: "pointer",
-};
-
-const loadingStyle = {
-  marginTop: "20px",
-  color: "#94a3b8",
 };
 
 const resultWrapper = {
@@ -186,21 +202,18 @@ const resultWrapper = {
   gap: "10px",
 };
 
+const actionWrapper = {
+  display: "flex",
+  gap: "8px",
+  alignItems: "center",
+};
+
 const resultBox = {
   width: "100%",
-  maxHeight: "60vh",   
-  overflowY: "auto",  
+  maxHeight: "60vh",
+  overflowY: "auto",
   background: "#1e293b",
   padding: "20px",
   borderRadius: "12px",
   lineHeight: "1.6",
-};
-
-const copyBtn = {
-  alignSelf: "flex-end",
-  background: "transparent",
-  border: "none",
-  color: "#94a3b8",
-  cursor: "pointer",
-  fontSize: "12px",
 };
