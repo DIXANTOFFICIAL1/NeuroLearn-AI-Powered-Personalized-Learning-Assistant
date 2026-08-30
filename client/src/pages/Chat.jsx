@@ -10,7 +10,7 @@ function Chat() {
   const [loading, setLoading] = useState(false);
 
   const chatEndRef = useRef(null);
-  
+
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -51,7 +51,7 @@ If the question is "how to":
 User Question:
 "${userInput}"
 `;
-   
+
       const reply = await sendMessageToAI(prompt, userInput);
 
       setMessages((prev) => [...prev, { text: reply, sender: "ai" }]);
@@ -244,3 +244,4 @@ const sendBtn = {
   color: "white",
   cursor: "pointer",
 };
+
