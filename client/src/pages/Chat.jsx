@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { sendMessageToAI } from "../services/api";
 import ReactMarkdown from "react-markdown";
+import LoadingState from "../components/LoadingState";
+import CopyButton from "../components/CopyButton";
 
 function Chat() {
   const [messages, setMessages] = useState([]);
@@ -63,10 +65,6 @@ User Question:
     setLoading(false);
   };
 
-  const copyText = (text) => {
-    navigator.clipboard.writeText(text);
-  };
-
   const clearChat = () => {
     setMessages([]);
   };
@@ -115,25 +113,16 @@ User Question:
                 msg.text
               )}
 
-              {msg.sender === "ai" && (
-                <div style={copyWrapper}>
-                  <button
-                    onClick={() => copyText(msg.text)}
-                    style={copyBtn}
-                  >
-                    Copy
-                  </button>
-                </div>
-              )}
+           {msg.sender === "ai" && (
+             <div style={copyWrapper}>
+            <CopyButton text={msg.text} />
+             </div>
+                )}
             </div>
           </div>
         ))}
 
-        {loading && (
-          <div style={typingBox}>
-            <span style={typingText}>AI is typing...</span>
-          </div>
-        )}
+        {loading && <LoadingState message="AI is typing..." />}
 
         <div ref={chatEndRef} />
       </div>
@@ -156,8 +145,6 @@ User Question:
 }
 
 export default Chat;
-
-/* ================= STYLES ================= */
 
 const container = {
   height: "100vh",
@@ -230,28 +217,6 @@ const aiBubble = {
 const copyWrapper = {
   marginTop: "6px",
   textAlign: "right",
-};
-
-const copyBtn = {
-  fontSize: "11px",
-  padding: "4px 10px",
-  borderRadius: "999px",
-  background: "#334155",
-  color: "#cbd5f5",
-  border: "none",
-  cursor: "pointer",
-};
-
-const typingBox = {
-  alignSelf: "flex-start",
-  background: "#1e293b",
-  padding: "10px 14px",
-  borderRadius: "10px",
-  border: "1px solid #334155",
-};
-
-const typingText = {
-  color: "#94a3b8",
 };
 
 const inputBox = {

@@ -141,6 +141,12 @@ body {
   transition: 0.2s;
 }
 
+@keyframes neurolearn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .input-area button:hover {
   background: var(--accent-hover);
 }

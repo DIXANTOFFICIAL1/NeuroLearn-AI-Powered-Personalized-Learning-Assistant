@@ -1,7 +1,9 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 import { generateAIResponse } from "./services/aiService.js";
+import Stats from "./models/Stats.js";
 
 dotenv.config();
 
@@ -10,9 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/* =======================
-   🔥 IN-MEMORY STATS
-   ======================= */
+// In-memory state used by the existing application logic
 let stats = {
   aiTutor: 0,
   explain: 0,
@@ -21,9 +21,6 @@ let stats = {
   career: 0,
 };
 
-/* =======================
-   🔥 ACTIVITY STORAGE
-   ======================= */
 let activity = [];
 
 const addActivity = (text) => {
@@ -31,41 +28,78 @@ const addActivity = (text) => {
   activity = activity.slice(0, 10);
 };
 
-/* =======================
-   🔥 HELPER: CLEAN LABEL
-   ======================= */
+// MongoDB persistence
+const saveToMongoDB = async () => {
+  try {
+    await Stats.findOneAndUpdate(
+      {},
+      {
+        aiTutor: stats.aiTutor,
+        explain: stats.explain,
+        quiz: stats.quiz,
+        roadmap: stats.roadmap,
+        career: stats.career,
+        activity,
+      },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
+  } catch (error) {
+    console.error("MongoDB save error:", error);
+  }
+};
+
+const loadFromMongoDB = async () => {
+  try {
+    const data = await Stats.findOne();
+
+    if (data) {
+      stats = {
+        aiTutor: data.aiTutor || 0,
+        explain: data.explain || 0,
+        quiz: data.quiz || 0,
+        roadmap: data.roadmap || 0,
+        career: data.career || 0,
+      };
+
+      activity = data.activity || [];
+
+      console.log("Stats restored from MongoDB ✅");
+    } else {
+      await saveToMongoDB();
+      console.log("Initial stats created in MongoDB ✅");
+    }
+  } catch (error) {
+    console.error("MongoDB load error:", error);
+  }
+};
+
+// Helpers
 const cleanLabel = (input, fallback) => {
   if (!input) return fallback;
-
-  // extract shorter meaningful part if prompt is long
-  if (input.length > 60) {
-    return fallback;
-  }
+  if (input.length > 60) return fallback;
 
   return input.replace(/\n/g, " ").trim();
 };
 
-/* =======================
-   🔥 HELPER: RANDOM PICK
-   ======================= */
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-/* =======================
-   ROOT
-   ======================= */
+// Root
 app.get("/", (req, res) => {
   res.send("NeuroLearn AI Backend Running 🚀");
 });
 
-/* =======================
-   🔥 CHAT
-   ======================= */
+// Chat
 app.post("/api/chat", async (req, res) => {
   try {
     const { message, rawInput } = req.body;
 
     if (!message) {
-      return res.status(400).json({ reply: "Message is required" });
+      return res.status(400).json({
+        reply: "Message is required",
+      });
     }
 
     stats.aiTutor++;
@@ -79,23 +113,24 @@ app.post("/api/chat", async (req, res) => {
       `💬 Investigated "${label}"`,
     ];
 
-    addActivity(actions[Math.floor(Math.random() * actions.length)]);
+    addActivity(pick(actions));
+    await saveToMongoDB();
 
     const reply = await generateAIResponse(message);
 
     res.json({ reply });
-
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ reply: "Server error" });
+    console.error("CHAT ERROR:", error);
+    res.status(500).json({
+      reply: "Server error",
+    });
   }
 });
-/* =======================
-   🔥 EXPLAIN
-   ======================= */
+
+// Explain
 app.post("/api/explain", async (req, res) => {
   try {
-    const { topic } = req.body;
+    const { topic, rawInput } = req.body;
 
     stats.explain++;
 
@@ -109,19 +144,20 @@ app.post("/api/explain", async (req, res) => {
     ];
 
     addActivity(pick(actions));
+    await saveToMongoDB();
 
-    const reply = await generateAIResponse(topic); // ✅ KEEP PROMPT
+    const reply = await generateAIResponse(rawInput);
 
     res.json({ reply });
-
   } catch (error) {
-    res.status(500).json({ reply: "Server error" });
+    console.error("EXPLAIN ERROR:", error);
+    res.status(500).json({
+      reply: "Server error",
+    });
   }
 });
 
-/* =======================
-   🔥 QUIZ
-   ======================= */
+// Quiz
 app.post("/api/quiz", async (req, res) => {
   try {
     const { topic } = req.body;
@@ -138,22 +174,23 @@ app.post("/api/quiz", async (req, res) => {
     ];
 
     addActivity(pick(actions));
+    await saveToMongoDB();
 
-    const reply = await generateAIResponse(topic); // ✅ KEEP PROMPT
+    const reply = await generateAIResponse(topic);
 
     res.json({ reply });
-
   } catch (error) {
-    res.status(500).json({ reply: "Server error" });
+    console.error("QUIZ ERROR:", error);
+    res.status(500).json({
+      reply: "Server error",
+    });
   }
 });
 
-/* =======================
-   🔥 ROADMAP
-   ======================= */
+// Roadmap
 app.post("/api/roadmap", async (req, res) => {
   try {
-    const { topic } = req.body;
+    const { topic, rawInput } = req.body;
 
     stats.roadmap++;
 
@@ -167,22 +204,23 @@ app.post("/api/roadmap", async (req, res) => {
     ];
 
     addActivity(pick(actions));
+    await saveToMongoDB();
 
-    const reply = await generateAIResponse(topic);
+    const reply = await generateAIResponse(rawInput);
 
     res.json({ reply });
-
   } catch (error) {
-    res.status(500).json({ reply: "Server error" });
+    console.error("ROADMAP ERROR:", error);
+    res.status(500).json({
+      reply: "Server error",
+    });
   }
 });
 
-/* =======================
-   🔥 CAREER
-   ======================= */
+// Career
 app.post("/api/career", async (req, res) => {
   try {
-    const { role } = req.body;
+    const { role, rawInput } = req.body;
 
     stats.career++;
 
@@ -196,30 +234,73 @@ app.post("/api/career", async (req, res) => {
     ];
 
     addActivity(pick(actions));
+    await saveToMongoDB();
 
-    const reply = await generateAIResponse(role);
+    const reply = await generateAIResponse(rawInput);
 
     res.json({ reply });
-
   } catch (error) {
-    res.status(500).json({ reply: "Server error" });
+    console.error("CAREER ERROR:", error);
+    res.status(500).json({
+      reply: "Server error",
+    });
   }
 });
 
-/* =======================
-   📊 STATS API
-   ======================= */
+// Reset stats
+app.delete("/api/stats/reset", async (req, res) => {
+  try {
+    stats = {
+      aiTutor: 0,
+      explain: 0,
+      quiz: 0,
+      roadmap: 0,
+      career: 0,
+    };
+
+    activity = [];
+
+    await saveToMongoDB();
+
+    res.json({
+      message: "Stats reset successfully",
+    });
+  } catch (error) {
+    console.error("RESET ERROR:", error);
+    res.status(500).json({
+      message: "Failed to reset stats",
+    });
+  }
+});
+
+// Stats
 app.get("/api/stats", (req, res) => {
-  res.set("Cache-Control", "no-store"); // 🔥 IMPORTANT FIX FOR REFRESH
+  res.set("Cache-Control", "no-store");
+
   res.json({
     ...stats,
     activity,
   });
 });
 
-/* =======================
-   SERVER
-   ======================= */
-app.listen(5000, () => {
-  console.log("Server running on http://localhost:5000");
-});
+// Connect to MongoDB and start server
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(async () => {
+    console.log("MongoDB connected ✅");
+
+    await loadFromMongoDB();
+
+    app.listen(5000, () => {
+      console.log("Server running on http://localhost:5000");
+    });
+  })
+  .catch((error) => {
+    console.error("MongoDB connection error:", error);
+
+    // Keep existing application available if MongoDB is unavailable
+    app.listen(5000, () => {
+      console.log("Server running on http://localhost:5000");
+      console.log("Running without MongoDB persistence ⚠️");
+    });
+  });

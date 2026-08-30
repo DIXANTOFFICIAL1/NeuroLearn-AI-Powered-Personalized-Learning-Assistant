@@ -1,5 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { generateQuiz } from "../services/api";
+import SuggestionChips from "../components/SuggestionChips";
+import LoadingState from "../components/LoadingState";
+import ErrorMessage from "../components/ErrorMessage";
+import QuizScoreCard from "../components/QuizScoreCard";
+import AnswerReveal from "../components/AnswerReveal";
+import QuestionProgress from "../components/QuestionProgress";
+import DifficultyBadge from "../components/DifficultyBadge";
 
 
 function Quiz() {
@@ -26,14 +33,12 @@ function Quiz() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [quizData, score]);
 
- 
   const extractJSON = (text) => {
     const start = text.indexOf("[");
     const end = text.lastIndexOf("]");
     return text.slice(start, end + 1);
   };
 
- 
   const getOptionLetter = (opt) => {
     if (!opt) return "";
     return opt.trim().charAt(0);
@@ -68,7 +73,9 @@ FORMAT:
 ]
 `;
 
+     
       const response = await generateQuiz(prompt, topic);
+
       const cleaned = extractJSON(response);
       const parsed = JSON.parse(cleaned);
 
@@ -84,11 +91,12 @@ FORMAT:
       } else {
         setQuizData(valid);
       }
-    } catch {
+    } catch (err) {
+      console.error("Quiz generation failed:", err);
       setError("Failed to generate quiz.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const handleSelect = (qIndex, option) => {
@@ -105,62 +113,127 @@ FORMAT:
 
     quizData.forEach((q, i) => {
       const selectedLetter = getOptionLetter(selected[i]);
-      if (selectedLetter === q.answer) correct++;
+
+      if (selectedLetter === q.answer) {
+        correct++;
+      }
     });
 
     setScore(correct);
     setSubmitted(true);
   };
 
+  const handleRetry = () => {
+    setSelected({});
+    setScore(null);
+    setSubmitted(false);
+    setError("");
+    handleGenerate();
+  };
+
   return (
     <div style={container}>
       <h2 style={title}>Quiz Generator</h2>
 
-      <div style={suggestionsBox}>
-        {suggestions.map((s, i) => (
-          <span key={i} style={chip} onClick={() => setTopic(s)}>
-            {s}
-          </span>
-        ))}
-      </div>
+      {/* SUGGESTIONS */}
+      <SuggestionChips
+        suggestions={suggestions}
+        onSelect={setTopic}
+      />
+  
+  
+   {/* INPUT */} 
+<div style={inputWrapper}> 
+  <input 
+    value={topic} 
+    onChange={(e) => setTopic(e.target.value)} 
+    placeholder="Enter topic..." 
+    style={input} 
+    onKeyDown={(e) => { 
+      if (e.key === "Enter") handleGenerate(); 
+    }} 
+  />
 
-      <div style={inputWrapper}>
-        <input
-          value={topic}
-          onChange={(e) => setTopic(e.target.value)}
-          placeholder="Enter topic..."
-          style={input}
-        />
-        <button onClick={handleGenerate} style={button}>
-          Generate
+        <button
+          onClick={handleGenerate}
+          disabled={loading}
+          style={{
+            ...button,
+            opacity: loading ? 0.7 : 1,
+          }}
+        >
+          {loading ? "Generating..." : "Generate"}
         </button>
       </div>
 
-      {loading && <div style={loadingStyle}>Generating quiz...</div>}
-      {error && <div style={errorStyle}>{error}</div>}
+      {/* LOADING */}
+      {loading && (
+        <LoadingState message="Generating quiz..." />
+      )}
 
-      {quizData.length > 0 && (
-        <div style={quizWrapper}>
-          {quizData.map((q, i) => (
-            <div key={i} style={questionBox}>
-              <h3>
-                {i + 1}. {q.question}
-              </h3>
+      {/* ERROR */}
+      {error && (
+        <ErrorMessage
+          message={error}
+          onRetry={handleGenerate}
+        />
+      )}
+
+
+
+   {/* QUIZ */}
+{quizData.length > 0 && (
+  <div style={quizWrapper}>
+   {!submitted && (
+  <QuestionProgress
+    current={Object.keys(selected).length}
+    total={quizData.length}
+  />
+)}
+
+    {quizData.map((q, i) => (
+      <div key={i} style={questionBox}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "10px",
+          }}
+        >
+          <h3>
+            {i + 1}. {q.question}
+          </h3>
+
+
+
+         <DifficultyBadge
+            difficulty={
+          i < 2 ? "Easy" : i < 4 ? "Medium" : "Hard"
+                 }
+            />
+                  </div>
 
               {q.options.map((opt, idx) => {
                 const selectedLetter = getOptionLetter(selected[i]);
                 const optionLetter = getOptionLetter(opt);
 
-                const isSelected = selectedLetter === optionLetter;
-                const isCorrect = q.answer === optionLetter;
+                const isSelected =
+                  selectedLetter === optionLetter;
+
+                const isCorrect =
+                  q.answer === optionLetter;
 
                 let bg = "#1e293b";
 
                 if (submitted) {
-                  if (isCorrect) bg = "#16a34a"; 
-                  else if (isSelected && !isCorrect) bg = "#dc2626"; 
-                } else {
-                  if (isSelected) bg = "#2563eb"; 
+                  if (isCorrect) {
+                    bg = "#16a34a";
+                  } else if (isSelected) {
+                    bg = "#dc2626";
+                  }
+                } else if (isSelected) {
+                  bg = "#2563eb";
                 }
 
                 return (
@@ -170,9 +243,15 @@ FORMAT:
                     style={{
                       ...optionStyle,
                       background: bg,
-                      cursor: submitted ? "default" : "pointer",
+                      cursor: submitted
+                        ? "default"
+                        : "pointer",
                       opacity:
-                        submitted && !isSelected && !isCorrect ? 0.6 : 1,
+                        submitted &&
+                        !isSelected &&
+                        !isCorrect
+                          ? 0.6
+                          : 1,
                     }}
                   >
                     {opt}
@@ -180,36 +259,26 @@ FORMAT:
                 );
               })}
 
-              {submitted && (
-                <div style={correctText}>
-                  ✔ Correct Answer: {q.answer}
-                </div>
-              )}
+              {submitted && <AnswerReveal answer={q.answer} />}
             </div>
           ))}
 
+          {/* SUBMIT */}
           {!submitted && (
-            <button onClick={calculateScore} style={submitBtn}>
+            <button
+              onClick={calculateScore}
+              style={submitBtn}
+            >
               Submit
             </button>
           )}
 
-          {score !== null && (
-            <div style={scoreBox}>
-              <div style={{ fontSize: "20px", fontWeight: "bold" }}>
-                🎯 Score: {score} / {quizData.length}
-              </div>
-
-              <div style={progressBar}>
-                <div
-                  style={{
-                    ...progressFill,
-                    width: `${(score / quizData.length) * 100}%`,
-                  }}
-                />
-              </div>
-            </div>
-          )}
+          {/* SCORE COMPONENT */}
+          <QuizScoreCard
+            score={score}
+            total={quizData.length}
+            onRetry={handleRetry}
+          />
         </div>
       )}
 
@@ -217,10 +286,6 @@ FORMAT:
     </div>
   );
 }
-
-export default Quiz;
-
-/* STYLES */
 
 const container = {
   height: "100%",
@@ -230,21 +295,8 @@ const container = {
   padding: "30px",
 };
 
-const title = { marginBottom: "10px" };
-
-const suggestionsBox = {
-  display: "flex",
-  gap: "10px",
-  flexWrap: "wrap",
-  marginBottom: "15px",
-};
-
-const chip = {
-  padding: "6px 12px",
-  background: "#1e293b",
-  borderRadius: "20px",
-  cursor: "pointer",
-  fontSize: "12px",
+const title = {
+  marginBottom: "10px",
 };
 
 const inputWrapper = {
@@ -272,10 +324,6 @@ const button = {
   cursor: "pointer",
 };
 
-const loadingStyle = { marginTop: "20px" };
-
-const errorStyle = { color: "red", marginTop: "10px" };
-
 const quizWrapper = {
   marginTop: "20px",
   width: "100%",
@@ -297,39 +345,18 @@ const optionStyle = {
   borderRadius: "6px",
 };
 
-const correctText = {
-  marginTop: "8px",
-  fontSize: "14px",
-  color: "#22c55e",
-};
-
 const submitBtn = {
+  width: "100%",
   marginTop: "10px",
   padding: "12px",
   background: "#16a34a",
   border: "none",
   borderRadius: "8px",
   color: "white",
+  cursor: "pointer",
 };
 
-const scoreBox = {
-  marginTop: "15px",
-  padding: "15px",
-  background: "#020617",
-  borderRadius: "10px",
-  textAlign: "center",
-};
+export default Quiz;
 
-const progressBar = {
-  marginTop: "10px",
-  height: "10px",
-  background: "#1e293b",
-  borderRadius: "10px",
-  overflow: "hidden",
-};
 
-const progressFill = {
-  height: "100%",
-  background: "#22c55e",
-  transition: "width 0.5s ease",
-};
+

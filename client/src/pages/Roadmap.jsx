@@ -1,12 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import { generateRoadmap } from "../services/api";
 import ReactMarkdown from "react-markdown";
+import SuggestionChips from "../components/SuggestionChips";
+import LoadingState from "../components/LoadingState";
+import CopyButton from "../components/CopyButton";
+import ErrorMessage from "../components/ErrorMessage";
+import DownloadButton from "../components/DownloadButton";
+import SectionNav from "../components/SectionNav";
 
 function Roadmap() {
   const [topic, setTopic] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [error, setError] = useState("");
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -26,7 +32,8 @@ function Roadmap() {
     if (!topic.trim()) return;
 
     setLoading(true);
-    setResult("");
+    setError("");
+    setResult("");  
 
     const prompt = `
 You are an expert career mentor.
@@ -55,25 +62,18 @@ FORMAT (VERY IMPORTANT):
 Make it clean, structured, and easy to follow.
 `;
 
-   const response = await generateRoadmap(prompt, topic);
+    try {
+    const response = await generateRoadmap(topic, prompt);
 
     setResult(response);
+  } catch (err) {
+    setError("Failed to generate roadmap");
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
-  const copyText = () => {
-    navigator.clipboard.writeText(result);
-  };
-
-  const downloadText = () => {
-    const blob = new Blob([result], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${topic}_roadmap.txt`;
-    a.click();
-  };
-
+  
   return (
     <div style={container}>
 
@@ -81,13 +81,10 @@ Make it clean, structured, and easy to follow.
         <h2>🚀 Learning Roadmap</h2>
       </div>
 
-      <div style={suggestionsBox}>
-        {suggestions.map((s, i) => (
-          <span key={i} style={chip} onClick={() => setTopic(s)}>
-            {s}
-          </span>
-        ))}
-      </div>
+      <SuggestionChips
+  suggestions={suggestions}
+  onSelect={setTopic}
+/>
 
   
       <div style={inputWrapper}>
@@ -105,24 +102,58 @@ Make it clean, structured, and easy to follow.
       </div>
 
    
-      {loading && (
-        <div style={loadingStyle}>Generating roadmap...</div>
-      )}
+      {loading && <LoadingState message="Generating roadmap..." />}
 
+     <ErrorMessage
+    message={error}
+     onRetry={handleGenerate}
+    />
   
       <div style={resultWrapper}>
+  
 
-        {result && (
-          <>          
-            <div style={actions}>
-              <button onClick={copyText} style={actionBtn}>Copy</button>
-              <button onClick={downloadText} style={actionBtn}>Download</button>
+{result && <SectionNav />}
+
+{result && (
+  <>          
+    <div style={actions}>
+         <CopyButton text={result} />
+             <DownloadButton
+           content={result}
+           filename={`${topic}_roadmap.txt`}
+           label="Download"
+            />
               <button onClick={() => setResult("")} style={actionBtn}>Clear</button>
+      
             </div>
 
             {/* CONTENT */}
             <div style={resultBox}>
-              <ReactMarkdown>{result}</ReactMarkdown>
+              <ReactMarkdown
+  components={{
+    h2: ({ children }) => {
+      const text = String(children).toLowerCase();
+
+      const id = text.includes("beginner")
+        ? "beginner"
+        : text.includes("intermediate")
+        ? "intermediate"
+        : text.includes("advanced")
+        ? "advanced"
+        : text.includes("resources")
+        ? "resources"
+        : undefined;
+
+      return (
+        <h2 id={id} style={{ scrollMarginTop: "20px" }}>
+          {children}
+        </h2>
+      );
+    },
+  }}
+   >
+  {result}
+  </ReactMarkdown>
             </div>
           </>
         )}
@@ -136,9 +167,6 @@ Make it clean, structured, and easy to follow.
 
 export default Roadmap;
 
-
-/* STYLES */
-
 const container = {
   height: "100%",
   display: "flex",
@@ -149,23 +177,6 @@ const container = {
 
 const header = {
   marginBottom: "10px",
-};
-
-const suggestionsBox = {
-  display: "flex",
-  gap: "10px",
-  flexWrap: "wrap",
-  marginBottom: "15px",
-  justifyContent: "center",
-};
-
-const chip = {
-  padding: "6px 12px",
-  background: "#1e293b",
-  borderRadius: "20px",
-  cursor: "pointer",
-  fontSize: "12px",
-  transition: "0.2s",
 };
 
 const inputWrapper = {
@@ -193,11 +204,6 @@ const button = {
   border: "none",
   cursor: "pointer",
   fontWeight: "600",
-};
-
-const loadingStyle = {
-  marginTop: "20px",
-  color: "#94a3b8",
 };
 
 const resultWrapper = {
