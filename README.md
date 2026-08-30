@@ -9,6 +9,7 @@ An intelligent full-stack educational platform that leverages Artificial Intelli
 ![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript)
 ![Groq](https://img.shields.io/badge/AI-Groq_API-6E56CF?style=for-the-badge)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248?style=for-the-badge&logo=mongodb)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
 </div>
@@ -19,7 +20,7 @@ An intelligent full-stack educational platform that leverages Artificial Intelli
 
 NeuroLearn AI is a modern AI-powered learning platform designed to make education more personalized, interactive, and efficient. Instead of relying on multiple websites for tutoring, quizzes, learning roadmaps, and career guidance, NeuroLearn AI combines all these capabilities into a single intelligent application.
 
-The platform uses **React.js** for the frontend, **Node.js + Express.js** for the backend, and **Groq AI API** to generate fast, context-aware educational responses.
+The platform uses **React.js** for the frontend, **Node.js + Express.js** for the backend, **Groq AI API** to generate fast, context-aware educational responses, and **MongoDB Atlas** for persistent storage of learning statistics and recent activity.
 
 ---
 
@@ -31,8 +32,11 @@ The platform uses **React.js** for the frontend, **Node.js + Express.js** for th
 - 🛣️ Personalized learning roadmap generation
 - 💼 AI Career Guidance
 - 📊 Dashboard with activity and usage statistics
+- 💾 Persistent statistics and activity using MongoDB
+- 🔄 Reset learning progress functionality
 - ⚡ Fast AI responses using Groq API
 - 🎨 Responsive and modern user interface
+- 🧩 20+ reusable React components
 - 🔄 Modular and scalable architecture
 
 ---
@@ -50,12 +54,19 @@ React Frontend
    ▼
 Node.js + Express Backend
    │
-   ▼
-Groq AI API
+   ├──────────────► Groq AI API
+   │                    │
+   │                    ▼
+   │              AI Generated Content
    │
-   ▼
-AI Generated Responses
+   └──────────────► MongoDB Atlas
+                        │
+                        ▼
+              Persistent Statistics
+              & Recent Activity
 ```
+
+The frontend communicates with the backend through RESTful APIs. The backend handles AI requests through Groq and stores learning statistics and recent activity in MongoDB.
 
 ---
 
@@ -67,13 +78,19 @@ AI Generated Responses
 - HTML5
 - CSS3
 - Axios
+- React Router
 
 ## Backend
 - Node.js
 - Express.js
+- RESTful APIs
+- Mongoose
 
 ## AI
 - Groq API
+
+## Database
+- MongoDB Atlas
 
 ## Development Tools
 - Git
@@ -83,7 +100,7 @@ AI Generated Responses
 
 ---
 
-## 📂 Project Structure
+# 📂 Project Structure
 
 ```text
 NeuroLearn-AI/
@@ -93,15 +110,42 @@ NeuroLearn-AI/
 │   ├── src/
 │   │   ├── assets/
 │   │   ├── components/
+│   │   │   ├── AnswerReveal.jsx
+│   │   │   ├── CareerSkillTags.jsx
+│   │   │   ├── ClearResultButton.jsx
+│   │   │   ├── ConfirmDialog.jsx
+│   │   │   ├── CopyAllButton.jsx
+│   │   │   ├── CopyButton.jsx
+│   │   │   ├── DifficultyBadge.jsx
+│   │   │   ├── DownloadButton.jsx
+│   │   │   ├── ErrorMessage.jsx
+│   │   │   ├── InputClearButton.jsx
+│   │   │   ├── LoadingState.jsx
+│   │   │   ├── PageHeader.jsx
+│   │   │   ├── PrimaryButton.jsx
+│   │   │   ├── ProgressBar.jsx
+│   │   │   ├── QuestionProgress.jsx
+│   │   │   ├── QuizScoreCard.jsx
+│   │   │   ├── RegenerateButton.jsx
+│   │   │   ├── SectionNav.jsx
+│   │   │   └── SuggestionChips.jsx
+│   │   │
 │   │   ├── pages/
+│   │   │   ├── Career.jsx
+│   │   │   ├── Chat.jsx
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── Explain.jsx
+│   │   │   ├── Quiz.jsx
+│   │   │   └── Roadmap.jsx
+│   │   │
 │   │   ├── services/
+│   │   │   └── api.js
 │   │   ├── App.css
 │   │   ├── App.jsx
 │   │   ├── index.css
 │   │   └── main.jsx
 │   │
 │   ├── .gitignore
-│   ├── README.md
 │   ├── eslint.config.js
 │   ├── index.html
 │   ├── package.json
@@ -109,6 +153,8 @@ NeuroLearn-AI/
 │   └── vite.config.js
 │
 ├── server/
+│   ├── models/
+│   │   └── Stats.js
 │   ├── services/
 │   │   └── aiService.js
 │   ├── server.js
@@ -129,13 +175,15 @@ NeuroLearn-AI/
 └── README.md
 ```
 
+---
+
 # ⚙️ Installation
 
 ## Clone Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/NeuroLearn-AI.git
-cd NeuroLearn-AI
+git clone https://github.com/DIXANTOFFICIAL1/NeuroLearn-AI-Powered-Personalized-Learning-Assistant.git
+cd NeuroLearn-AI-Powered-Personalized-Learning-Assistant
 ```
 
 ---
@@ -145,29 +193,38 @@ cd NeuroLearn-AI
 ```bash
 cd client
 npm install
-npm start
+npm run dev
 ```
 
 ---
 
 ## Install Backend
 
+Open a new terminal:
+
 ```bash
 cd server
 npm install
-npm run dev
+npm start
 ```
 
 ---
 
-## Environment Variables
+# 🔐 Environment Variables
 
-Create a `.env` file inside the server directory.
+Create a `.env` file inside the `server` directory.
 
 ```env
-GROQ_API_KEY=your_api_key_here
-PORT=5000
+GROQ_API_KEY=your_groq_api_key_here
+MONGODB_URI=your_mongodb_connection_string_here
 ```
+
+### Environment variable details
+
+- `GROQ_API_KEY` → Used for AI response generation
+- `MONGODB_URI` → Used to connect the backend to MongoDB Atlas
+
+**Never commit your `.env` file or expose your API keys publicly.**
 
 ---
 
@@ -177,8 +234,8 @@ PORT=5000
 2. Start the React frontend.
 3. Open your browser.
 
-```
-http://localhost:3000
+```text
+http://localhost:5173
 ```
 
 Select any module such as:
@@ -188,8 +245,32 @@ Select any module such as:
 - Quiz Generator
 - Roadmap Planner
 - Career Guidance
+- Dashboard
 
 Enter your query and receive AI-generated responses.
+
+The Dashboard tracks activity across all modules and stores statistics and recent activity persistently in MongoDB.
+
+---
+
+# 📊 Dashboard & Persistence
+
+NeuroLearn AI includes a dashboard that tracks learning activity across all major modules.
+
+The dashboard displays:
+
+- 🤖 AI Tutor usage
+- 💡 Explain usage
+- 📝 Quiz attempts
+- 🗺️ Roadmap activity
+- 💼 Career guidance activity
+- 📈 Overall learning progress
+- 📌 Recent activity history
+- 💾 Persistent data using MongoDB
+
+Statistics and recent activity are stored in MongoDB so they remain available after restarting the backend server.
+
+The Dashboard also provides a **Reset** option that allows users to clear their learning statistics and recent activity and start again.
 
 ---
 
@@ -228,13 +309,16 @@ Enter your query and receive AI-generated responses.
 # 🔄 Application Workflow
 
 1. User selects a module.
-2. User enters a topic or question.
-3. Frontend sends request to backend.
+2. User enters a topic, role, or question.
+3. React frontend sends a request to the Express backend.
 4. Backend processes the request.
-5. Backend communicates with Groq AI API.
-6. AI generates personalized content.
-7. Response is displayed on the frontend.
-8. Dashboard updates activity statistics.
+5. Backend communicates with the Groq AI API.
+6. Groq generates the requested AI content.
+7. Backend returns the response to the frontend.
+8. React displays the generated content.
+9. Module usage statistics and recent activity are updated.
+10. Statistics and activity are persisted in MongoDB.
+11. Dashboard retrieves and displays the stored learning data.
 
 ---
 
@@ -246,8 +330,34 @@ Enter your query and receive AI-generated responses.
 | Explain | Generates simplified explanations |
 | Quiz Generator | Creates topic-based quizzes |
 | Roadmap Planner | Builds structured learning paths |
-| Career Guidance | Provides career recommendations |
-| Dashboard | Displays activity statistics |
+| Career Guidance | Provides career recommendations and role guidance |
+| Dashboard | Displays statistics, progress, tips, and recent activity |
+
+---
+
+# 🧩 Reusable Components
+
+NeuroLearn AI uses a component-based React architecture with **20+ reusable components**.
+
+Examples include:
+
+- `SuggestionChips.jsx`
+- `LoadingState.jsx`
+- `ErrorMessage.jsx`
+- `CopyButton.jsx`
+- `DownloadButton.jsx`
+- `ProgressBar.jsx`
+- `QuizScoreCard.jsx`
+- `QuestionProgress.jsx`
+- `AnswerReveal.jsx`
+- `DifficultyBadge.jsx`
+- `CareerSkillTags.jsx`
+- `SectionNav.jsx`
+- `ConfirmDialog.jsx`
+- `InputClearButton.jsx`
+- `RegenerateButton.jsx`
+
+These components help keep the application modular, reusable, and easier to maintain.
 
 ---
 
@@ -255,9 +365,16 @@ Enter your query and receive AI-generated responses.
 
 - Full-Stack AI Application
 - Component-Based React Architecture
+- 5 AI-Powered Learning Modules
 - RESTful API Design
-- AI-Powered Educational Platform
-- Personalized Learning Experience
+- Groq AI Integration
+- MongoDB Atlas Integration
+- Mongoose-Based Database Integration
+- Persistent Learning Statistics
+- Persistent Recent Activity
+- Dashboard Progress Tracking
+- Reset Progress Functionality
+- 20+ Reusable React Components
 - Responsive UI
 - Modular Backend
 - Scalable Project Structure
@@ -277,15 +394,16 @@ NeuroLearn AI promotes accessible, personalized, and technology-driven education
 # 🔮 Future Scope
 
 - User Authentication
-- MongoDB Integration
+- User-Specific Learning Profiles
 - Voice-Based AI Tutor
 - AI Resume Builder
 - Coding Compiler
 - Placement Interview Preparation
-- Learning Analytics
+- Advanced Learning Analytics
 - Mobile Application
 - Multi-language Support
 - Cloud Deployment
+- Gamification and Achievement Badges
 
 ---
 
