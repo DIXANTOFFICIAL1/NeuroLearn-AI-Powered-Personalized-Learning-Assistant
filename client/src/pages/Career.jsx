@@ -1,14 +1,20 @@
 import { useState, useRef, useEffect } from "react";
 import { generateCareer } from "../services/api";
 import ReactMarkdown from "react-markdown";
+import SuggestionChips from "../components/SuggestionChips";
+import LoadingState from "../components/LoadingState";
+import ErrorMessage from "../components/ErrorMessage";
+import CareerSkillTags from "../components/CareerSkillTags";
+import CopyAllButton from "../components/CopyAllButton";
 
 function Career() {
   const [role, setRole] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const bottomRef = useRef(null);
-  
+
   const suggestions = [
     "Software Engineer",
     "Frontend Developer",
@@ -19,7 +25,7 @@ function Career() {
     "Cyber Security",
     "Android Developer",
   ];
-  
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [result]);
@@ -28,6 +34,8 @@ function Career() {
     if (!role.trim()) return;
 
     setLoading(true);
+    setError("");
+    setResult("");
 
     const prompt = `
 You are a professional career mentor.
@@ -65,29 +73,29 @@ What to focus on.
 ## 🔥 Tips to Stand Out
 Real advice (not generic).
 `;
-    
-    const response = await generateCareer(prompt, role);
 
-    setResult(response);
-    setLoading(false);
+    try {
+      const response = await generateCareer(role, prompt);
+
+      setResult(response);
+    } catch (err) {
+      setError("Failed to generate career guide");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div style={container}>
-      
       <div style={topSection}>
         <h2 style={title}>Career Guidance</h2>
       </div>
 
       <div style={inputSection}>
-
-        <div style={suggestionsBox}>
-          {suggestions.map((s, i) => (
-            <span key={i} style={chip} onClick={() => setRole(s)}>
-              {s}
-            </span>
-          ))}
-        </div>
+        <SuggestionChips
+          suggestions={suggestions}
+          onSelect={setRole}
+        />
 
         <div style={inputWrapper}>
           <input
@@ -105,8 +113,13 @@ Real advice (not generic).
 
       <div style={resultWrapper}>
         {loading && (
-          <p style={loadingText}>Generating career guide...</p>
+          <LoadingState message="Generating career guide..." />
         )}
+
+        <ErrorMessage
+          message={error}
+          onRetry={handleGenerate}
+        />
 
         {!loading && !result && (
           <div style={empty}>
@@ -115,8 +128,11 @@ Real advice (not generic).
           </div>
         )}
 
+        {role && <CareerSkillTags role={role} />}
+
         {result && (
           <div style={resultBox}>
+            <CopyAllButton text={result} />
             <ReactMarkdown>{result}</ReactMarkdown>
           </div>
         )}
@@ -162,22 +178,6 @@ const inputSection = {
   zIndex: 15,
 };
 
-const suggestionsBox = {
-  display: "flex",
-  gap: "10px",
-  flexWrap: "wrap",
-  marginBottom: "12px",
-};
-
-const chip = {
-  padding: "6px 12px",
-  background: "#1e293b",
-  borderRadius: "20px",
-  cursor: "pointer",
-  fontSize: "12px",
-  border: "1px solid #334155",
-};
-
 const inputWrapper = {
   display: "flex",
   gap: "10px",
@@ -220,10 +220,5 @@ const resultBox = {
 const empty = {
   textAlign: "center",
   marginTop: "100px",
-  color: "#94a3b8",
-};
-
-const loadingText = {
-  textAlign: "center",
   color: "#94a3b8",
 };
