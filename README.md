@@ -238,13 +238,57 @@ VITE_API_URL=your_backend_api_url
 
 ---
 
+# 🌐 Deployment
+
+NeuroLearn AI is deployed using a full-stack cloud architecture.
+
+### Frontend — Vercel
+
+https://neurolearn-ai-powered-personalized.vercel.app/
+
+The React frontend is hosted on **Vercel**.
+
+### Backend — Render
+
+https://neurolearn-backend-hism.onrender.com/
+
+The Node.js + Express backend is hosted on **Render**.
+
+### Database — MongoDB Atlas
+
+MongoDB Atlas provides persistent storage for:
+
+- Learning statistics
+- Recent activity
+- Dashboard progress data
+
+### AI — Groq API
+
+Groq API powers the AI-generated responses across the learning modules.
+
+### Deployment Architecture
+
+```text
+React Frontend
+      │
+      ▼
+   Vercel
+      │
+      ▼
+Node.js + Express Backend
+      │
+      ├──────────────► Groq API
+      │
+      └──────────────► MongoDB Atlas
+```
+
+---
+
 # 💻 Usage
 
 Open the live application:
 
-```text
 https://neurolearn-ai-powered-personalized.vercel.app/
-```
 
 Select any module such as:
 
