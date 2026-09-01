@@ -174,7 +174,6 @@ NeuroLearn-AI/
 ├── LICENSE
 └── README.md
 ```
-
 ---
 
 # ⚙️ Installation
@@ -212,6 +211,8 @@ npm start
 
 # 🔐 Environment Variables
 
+### Backend
+
 Create a `.env` file inside the `server` directory.
 
 ```env
@@ -219,23 +220,30 @@ GROQ_API_KEY=your_groq_api_key_here
 MONGODB_URI=your_mongodb_connection_string_here
 ```
 
-### Environment variable details
+### Frontend
+
+Create a `.env` file inside the `client` directory.
+
+```env
+VITE_API_URL=your_backend_api_url
+```
+
+### Environment Variable Details
 
 - `GROQ_API_KEY` → Used for AI response generation
 - `MONGODB_URI` → Used to connect the backend to MongoDB Atlas
+- `VITE_API_URL` → Specifies the backend API URL used by the React frontend
 
-**Never commit your `.env` file or expose your API keys publicly.**
+**Never commit your `.env` files or expose your API keys publicly.**
 
 ---
 
 # 💻 Usage
 
-1. Start the backend server.
-2. Start the React frontend.
-3. Open your browser.
+Open the live application:
 
 ```text
-http://localhost:5173
+https://neurolearn-ai-powered-personalized.vercel.app/
 ```
 
 Select any module such as:
@@ -250,6 +258,8 @@ Select any module such as:
 Enter your query and receive AI-generated responses.
 
 The Dashboard tracks activity across all modules and stores statistics and recent activity persistently in MongoDB.
+
+The application also provides a **Reset** option that allows users to clear their learning statistics and recent activity and start again.
 
 ---
 
