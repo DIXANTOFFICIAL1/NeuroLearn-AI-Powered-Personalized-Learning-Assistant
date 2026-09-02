@@ -3,7 +3,7 @@
 # 🎓 NeuroLearn AI
 ### AI-Powered Personalized Learning Assistant
 
-An intelligent full-stack educational platform that leverages Artificial Intelligence to provide personalized tutoring, concept explanations, quiz generation, learning roadmaps, career guidance, and progress tracking—all in one unified application.
+An intelligent full-stack educational platform that leverages Artificial Intelligence to provide personalized tutoring, concept explanations, quiz generation, learning roadmaps, career guidance, and progress tracking all in one unified application.
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)
 ![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js)
