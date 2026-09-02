@@ -46,24 +46,31 @@ The platform uses **React.js** for the frontend, **Node.js + Express.js** for th
 The application follows a **Three-Tier Architecture**:
 
 ```text
-Users
-   │
-   ▼
-React Frontend
-   │
-   ▼
-Node.js + Express Backend
-   │
-   ├──────────────► Groq AI API
-   │                    │
-   │                    ▼
-   │              AI Generated Content
-   │
-   └──────────────► MongoDB Atlas
-                        │
-                        ▼
-              Persistent Statistics
-              & Recent Activity
+                    USER
+                      │
+                      ▼
+              React Frontend
+                      │
+                Axios / REST API
+                      │
+                      ▼
+             Node.js + Express
+                  Backend
+                 /       \
+                /         \
+               ▼           ▼
+          Groq API     MongoDB Atlas
+               │             │
+               ▼             ▼
+        AI-generated     Stats &
+          response       Activity
+                \           /
+                 \         /
+                  ▼       ▼
+                Backend
+                   │
+                   ▼
+              React Frontend
 ```
 
 The frontend communicates with the backend through RESTful APIs. The backend handles AI requests through Groq and stores learning statistics and recent activity in MongoDB.
