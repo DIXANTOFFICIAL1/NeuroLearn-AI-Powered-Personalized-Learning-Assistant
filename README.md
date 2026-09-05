@@ -75,6 +75,7 @@ The application follows a **Three-Tier Architecture**:
 
 The frontend communicates with the backend through RESTful APIs. The backend handles AI requests through Groq and stores learning statistics and recent activity in MongoDB.
 
+
 ---
 
 # 🚀 Technology Stack
