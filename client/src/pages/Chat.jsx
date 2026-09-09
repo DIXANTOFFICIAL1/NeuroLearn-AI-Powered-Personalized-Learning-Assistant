@@ -24,8 +24,7 @@ function Chat() {
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setLoading(true);
-
-    
+  
     try {
       const prompt = `
 You are a professional AI tutor.
