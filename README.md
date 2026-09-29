@@ -18,6 +18,7 @@ An intelligent full-stack educational platform that leverages Artificial Intelli
 
 # 📖 Overview
 
+
 NeuroLearn AI is a modern AI-powered learning platform designed to make education more personalized, interactive, and efficient. Instead of relying on multiple websites for tutoring, quizzes, learning roadmaps, and career guidance, NeuroLearn AI combines all these capabilities into a single intelligent application.
 
 The platform uses **React.js** for the frontend, **Node.js + Express.js** for the backend, **Groq AI API** to generate fast, context-aware educational responses, and **MongoDB Atlas** for persistent storage of learning statistics and recent activity.
