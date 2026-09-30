@@ -39,6 +39,7 @@ The platform uses **React.js** for the frontend, **Node.js + Express.js** for th
 - 🧩 20+ reusable React components
 - 🔄 Modular and scalable architecture
 
+
 ---
 
 # 🏗️ System Architecture
