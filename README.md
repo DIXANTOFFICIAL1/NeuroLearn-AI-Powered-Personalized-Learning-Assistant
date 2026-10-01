@@ -41,6 +41,7 @@ The platform uses **React.js** for the frontend, **Node.js + Express.js** for th
 
 ---
 
+
 # 🏗️ System Architecture
 
 The application follows a **Three-Tier Architecture**:
