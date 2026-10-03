@@ -12,7 +12,6 @@ An intelligent full-stack educational platform that leverages Artificial Intelli
 ![MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248?style=for-the-badge&logo=mongodb)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-
 </div>
 
 ---
