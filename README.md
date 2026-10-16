@@ -14,7 +14,6 @@ An intelligent full-stack educational platform that leverages Artificial Intelli
 
 </div>
 
-
 ---
 
 # 📖 Overview
